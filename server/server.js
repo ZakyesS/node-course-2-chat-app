@@ -7,6 +7,6 @@ let app = express();
 
 app.use(express.static(publicPath));    //indicamos la ruta estática que vamos a usar y la use.
 
-app.listen(3000, () =>{
+app.listen(port, () =>{
     console.log(`Server is up on port ${port}`);
 });
