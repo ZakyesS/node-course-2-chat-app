@@ -20,16 +20,21 @@ app.use(express.static(publicPath));    //indicamos la ruta estática que vamos 
 io.on('connection', (socket) => {
     console.log('New user connected');
     
-    //crea evento NewMessage que recibirá el cliente.
-    socket.emit('newMessage', {
-        from: 'server@server.com',
-        text: 'Hello client.',
-        createAt: 123
-    });
+    // //crea evento NewMessage que recibirá el cliente.
+    // socket.emit('newMessage', {
+    //     from: 'server@server.com',
+    //     text: 'Hello client.',
+    //     createAt: 123
+    // });
 
     // recibe evento createMessage del cliente.
     socket.on('createMessage', (message) => {
         console.log('Message back from client --> ', message);
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createAt: new Date().getTime()  //crea un nuevo timestamp.
+        });
     });
 
     socket.on('disconnect', () => {
