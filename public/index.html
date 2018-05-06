@@ -10,18 +10,6 @@
         <h1>Welcome to the chat app</h1>
 
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            //se almacena en una variable, porque el io() es la conexion para 
-            //escuchar y enviar datos desde el server.
-            let socket = io(); 
-            
-            socket.on('connect', () => {
-                console.log("Connected to server");
-            });
-
-            socket.on('disconnect', () => {
-                console.log('Disconnected from server');
-            });
-        </script>
+        <script src="/js/index.js"></script>
     </body>
 </html>

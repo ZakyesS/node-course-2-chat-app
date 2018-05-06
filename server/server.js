@@ -19,14 +19,24 @@ app.use(express.static(publicPath));    //indicamos la ruta estática que vamos 
 // permite registrar un evento de escucha y se puede escuchar por un evento especifico y hacer algo cuando éste ocurra.
 io.on('connection', (socket) => {
     console.log('New user connected');
+    
+    //crea evento NewMessage que recibirá el cliente.
+    socket.emit('newMessage', {
+        from: 'server@server.com',
+        text: 'Hello client.',
+        createAt: 123
+    });
+
+    // recibe evento createMessage del cliente.
+    socket.on('createMessage', (message) => {
+        console.log('Message back from client --> ', message);
+    });
 
     socket.on('disconnect', () => {
         console.log('User was disconnected.');
     });
 
 });
-
-
 
 /* app.listen(port, () =>{  --> cuando se usa el http(como se almacenó en server) y se crea un servidor, 
     para luego decirle el puerto por el que escucha, se usa "server" en vez de "app".*/
