@@ -20,31 +20,43 @@ app.use(express.static(publicPath));    //indicamos la ruta estática que vamos 
 io.on('connection', (socket) => {
     console.log('New user connected');
     
-    // //crea evento NewMessage que recibirá el cliente.
-    // socket.emit('newMessage', {
-    //     from: 'server@server.com',
-    //     text: 'Hello client.',
-    //     createAt: 123
-    // });
+    //emite a todos los clientes.
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome to the chat app!.',
+        createAt: new Date().getTime()
+    });
 
+    // Cuando se conecte un user, emite al resto que ya estaba conectado.
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'New user joined.',
+        createAt: new Date().getTime()
+    });
+    
+            
     // recibe evento createMessage del cliente.
     socket.on('createMessage', (message) => {
-        console.log('Message back from client --> ', message);
+        console.log('createMessage --> ', message);
+        
         io.emit('newMessage', {
             from: message.from,
             text: message.text,
             createAt: new Date().getTime()  //crea un nuevo timestamp.
         });
+        //broadcast
+        // socket.broadcast.emit('newMessage', {
+        //     from: message.from,
+        //     text: message.text,
+        //     createAt: new Date().getTime() 
+        // });
     });
 
     socket.on('disconnect', () => {
         console.log('User was disconnected.');
     });
-
 });
 
-/* app.listen(port, () =>{  --> cuando se usa el http(como se almacenó en server) y se crea un servidor, 
-    para luego decirle el puerto por el que escucha, se usa "server" en vez de "app".*/
 server.listen(port, () =>{
     console.log(`Server is up on port ${port}`);
 });
