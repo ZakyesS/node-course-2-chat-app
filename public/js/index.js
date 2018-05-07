@@ -13,9 +13,10 @@ socket.on('disconnect', function () {
 
 //recibe evento del server.
 socket.on('newMessage', function (message) {
-    console.log('NewMessage --> ', message);
+    //console.log('NewMessage --> ', message);
+    let formattedTime = moment(message.createdAt).format('h:mm a');
     let li = jQuery('<li></li>');
-    li.text(`${message.from}: ${message.text}`);
+    li.text(`${message.from} ${formattedTime}: ${message.text}`);
 
     jQuery('#messages').append(li); // # --> para coger por id(coge el id messages del ol del index.html).
     // append() --> añadir contenido al elemento que se le especifique.
@@ -23,12 +24,13 @@ socket.on('newMessage', function (message) {
 
 // recibe evento de localizacion del server.
 socket.on('newLocationMessage', function(message) {
+    let formattedTime = moment(message.createdAt).format('h:mm a');
     let li = jQuery('<li></li>');
 
     //<a></<a> --> hipervinculo,  _blank --> abrir en nueva pestaña.
     let a = jQuery('<a target="_blank"> My current location.</a>');
 
-    li.text(`${message.from}`);
+    li.text(`${message.from} ${formattedTime}:`);
     a.attr('href', message.url);    // le añade a la variable a el atributo url.
     li.append(a);   //añade a(url) a la lista.
     jQuery('#messages').append(li);
