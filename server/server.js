@@ -28,11 +28,13 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('newMessage', generateMessage('Admin','New user joined'));        
 
 
-    // recibe evento createMessage del cliente.
-    socket.on('createMessage', (message) => {
+    // recibe evento createMessage de los clientes.
+    socket.on('createMessage', (message, callback) => {
         console.log('createMessage --> ', message);
         
+        //emite evento a los users conectados.
         io.emit('newMessage', generateMessage(message.from, message.text));
+        callback('This  is from server.');  //este mensaje le va a llegar al user, pero no al server.
         //broadcast
         // socket.broadcast.emit('newMessage', {
         //     from: message.from,
