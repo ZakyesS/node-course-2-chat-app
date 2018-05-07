@@ -21,6 +21,19 @@ socket.on('newMessage', function (message) {
     // append() --> añadir contenido al elemento que se le especifique.
 });
 
+// recibe evento de localizacion del server.
+socket.on('newLocationMessage', function(message) {
+    let li = jQuery('<li></li>');
+    
+    //<a></<a> --> hipervinculo,  _blank --> abrir en nueva pestaña.
+    let a = jQuery('<a target="_blank"> My current location.</a>');
+
+    li.text(`${message.from}`);
+    a.attr('href', message.url);    // le añade a la variable a el atributo url.
+    li.append(a);   //añade a(url) a la lista.
+    jQuery('#messages').append(li);
+});
+
 /* Cuando emita el evento, éste se lo enviará al server y él lo distribuirá al resto de usuarios conectados.*/
 jQuery('#message-form').on('submit', function(e) {  // # --> para coger por id(coge el formulario message form del index.html).
     //e.preventDefault();
@@ -33,4 +46,25 @@ jQuery('#message-form').on('submit', function(e) {  // # --> para coger por id(c
     }, function() {
 
     });
+});
+
+
+let locationButton = jQuery('#send-location');  //almacenamos el botón send-location cogiendo el id.
+locationButton.on('click', function() {
+    if(!navigator.geolocation){         //si los navegadores antiguos no soportan la localización.
+        return alert('Geolocation not supported by your browser.');
+    }
+    /*El navigator.greolocation va a tener 2 arg: 
+    1- funct si hay éxito.
+    2- funct si no lo hay.
+    */
+    navigator.geolocation.getCurrentPosition(function(position) {
+        //emite evento createLocationMessage al server.
+        socket.emit('createLocationMessage', {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+        });
+    }, function() {
+        alert('Unable to fetch location.');
+    }); 
 });

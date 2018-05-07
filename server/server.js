@@ -5,7 +5,7 @@ const express = require('express');
 // sockect.io -->  tiene libreria de front end y de back end
 const socketIO = require('socket.io');  //librería que permite la comunicacion entre cliente y servidor y viceversa.
 
-const {generateMessage} = require('./utils/message');
+const {generateMessage, generateLocationMessage} = require('./utils/message');
 const publicPath = path.join(__dirname, '../public');   //para que anide las rutas de directorios y se guarde la carpeta public en publicPath.
 const port = process.env.PORT || 3000;
 let app = express();
@@ -35,13 +35,17 @@ io.on('connection', (socket) => {
         //emite evento a los users conectados.
         io.emit('newMessage', generateMessage(message.from, message.text));
         callback('This  is from server.');  //este mensaje le va a llegar al user, pero no al server.
-        //broadcast
-        // socket.broadcast.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createAt: new Date().getTime() 
-        // });
     });
+
+    // socket.on('createLocationMessage', (coords) => {
+    //     //emite evento para los usuarios conectados con las coordenadas del usuario que las envió.
+    //     io.emit('newMessage', generateMessage('Admin', `${coords.latitude}, ${coords.longitude}`));
+    // });
+    socket.on('createLocationMessage', (coords) => {
+        //emite evento para los usuarios conectados con las coordenadas del usuario que las envió.
+        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+    });
+
 
     socket.on('disconnect', () => {
         console.log('User was disconnected.');
