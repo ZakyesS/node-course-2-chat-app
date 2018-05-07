@@ -3,6 +3,24 @@
 // io() se almacena en socket, porque es la conexion.
 let socket = io(); 
 
+// funcion para calcular el scroll y que se haga automático.
+function scrollToBottom () {
+    //Selectors
+    let messages = jQuery('#messages');
+    let newMessage = messages.children('li:last-child');    //mete el último mensaje de la lista.
+    //Heights
+    let clientHeight = messages.prop('clientHeight'); // el alto de lo que se ve. 
+    let scrollTop = messages.prop('scrollTop'); // espacio entre clientHeight(lo que se ve) y el principio de la window.
+    let scrollHeight = messages.prop('scrollHeight');   // el alto de toda la window.
+    let newMessageHeight = newMessage.innerHeight();    // al hijo le una el tamaño(total) de la window.
+    let lastMessageHeight = newMessage.prev().innerHeight();    //al hijo le una el tamaño(total) previo de la window.
+
+    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+        messages.scrollTop(scrollHeight);   //aquí hace el auto-scrolling.
+    }
+};
+
+
 socket.on('connect', function () {  //se usan regular functions porque cuando se vaya a ver en un navegador distinto a chrome se va a romper.
     console.log("Connected to server");
 });
@@ -23,7 +41,7 @@ socket.on('newMessage', function (message) {
     });
     // append() --> añadir contenido al elemento que se le especifique.
     jQuery('#messages').append(html);
-
+    scrollToBottom(); // llama a la funcion para hacer auto-scroll
 });
 
 // recibe evento de localizacion del server.
@@ -37,6 +55,7 @@ socket.on('newLocationMessage', function(message) {
         url: message.url
     });
     jQuery('#messages').append(html);
+    scrollToBottom();
 });
 
 /* Cuando emita el evento, éste se lo enviará al server y él lo distribuirá al resto de usuarios conectados.*/
