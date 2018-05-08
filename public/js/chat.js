@@ -22,7 +22,19 @@ function scrollToBottom () {
 
 
 socket.on('connect', function () {  //se usan regular functions porque cuando se vaya a ver en un navegador distinto a chrome se va a romper.
-    console.log("Connected to server");
+    //console.log("Connected to server");
+    let params = jQuery.deparam(window.location.search);    //para coger la url y poder acceder al name y al room introducidos.
+
+    //emite evento cuando user se una a canal.
+    socket.emit('join', params, function(err) {
+        if(err){
+            alert(err);
+            window.location.href = '/';
+        }
+        else{
+            console.log('No error');
+        }
+    });
 });
 
 socket.on('disconnect', function () {

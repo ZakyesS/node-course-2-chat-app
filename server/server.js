@@ -6,6 +6,7 @@ const express = require('express');
 const socketIO = require('socket.io');  //librería que permite la comunicacion entre cliente y servidor y viceversa.
 
 const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {isRealString} = require('./utils/validation');
 const publicPath = path.join(__dirname, '../public');   //para que anide las rutas de directorios y se guarde la carpeta public en publicPath.
 const port = process.env.PORT || 3000;
 let app = express();
@@ -20,13 +21,31 @@ app.use(express.static(publicPath));    //indicamos la ruta estática que vamos 
 // permite registrar un evento de escucha y se puede escuchar por un evento especifico y hacer algo cuando éste ocurra.
 io.on('connection', (socket) => {
     console.log('New user connected');
+
+        // //emite a todos los clientes.
+        // socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app!'));
+
+        // //Cuando se conecte un user, emite al resto que ya estaba conectado.
+        // socket.broadcast.emit('newMessage', generateMessage('Admin','New user joined'));        
     
-    //emite a todos los clientes.
-    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app!'));
 
-    //Cuando se conecte un user, emite al resto que ya estaba conectado.
-    socket.broadcast.emit('newMessage', generateMessage('Admin','New user joined'));        
+    //recibe el evento que crea el user al unirse al canal.
+    socket.on('join', (params, callback) => {
+        if (!isRealString(params.name) || !isRealString(params.room)) {
+            callback('Name and room name are required.');
+        }
 
+        socket.join(params.room);   //unirse al canal con el room pasado.
+      
+        //emite a todos los clientes que se conecten.
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app!'));
+
+        //Cuando se conecte un user, emite al canal al resto de users que ya estaban conectado.
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined.`));        
+
+
+        callback();
+    });
 
     // recibe evento createMessage de los clientes.
     socket.on('createMessage', (message, callback) => {
