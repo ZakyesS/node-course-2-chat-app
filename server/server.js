@@ -47,16 +47,22 @@ io.on('connection', (socket) => {
 
     // recibe evento createMessage de los clientes.
     socket.on('createMessage', (message, callback) => {
-        console.log('createMessage --> ', message);
+        //console.log('createMessage --> ', message);
         
-        //emite evento a los users conectados.
-        io.emit('newMessage', generateMessage(message.from, message.text));
+        let user = users.getUser(socket.id);
+        if(user && isRealString(message.text)){
+            //emite evento al canal a los users conectados.
+            io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+        }
         callback();  //este mensaje le va a llegar al user, pero no al server.
     });
 
     socket.on('createLocationMessage', (coords) => {
-        //emite evento para los usuarios conectados con las coordenadas del usuario que las envió.
-        io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+        let user = users.getUser(socket.id);
+        if(user){
+            //emite evento al canal para los usuarios conectados con las coordenadas del usuario que las envió.
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
+        }
     });
 
 

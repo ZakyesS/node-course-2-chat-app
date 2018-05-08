@@ -91,7 +91,7 @@ jQuery('#message-form').on('submit', function(e) {  // # --> para coger por id(c
     let messageTextbox = jQuery('[name=message]');
 
     socket.emit('createMessage', {
-        from: 'User',
+        //from: 'User',
         /*como en el input del form del index.html hay un campo name ="message", con el jQuery
         recoge lo que se introduzca y lo mete en text: para eviarlo al server.*/
         text: messageTextbox.val()    //val() --> dale valor vacío.
